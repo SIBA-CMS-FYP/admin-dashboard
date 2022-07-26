@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:adminpanel/admin_dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -76,7 +77,7 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       processing = true;
     });
-    var url = "https://";
+    var url = "http://";
     var data = {
       "teacherCMS": teacherCMS.text,
       "password": password.text,
@@ -95,28 +96,41 @@ class _MyAppState extends State<MyApp> {
   }
 
   void teacherLogin() async {
-    setState(() {
-      processing = true;
-    });
-    var url = "https://";
+    // setState(() {
+    //   processing = true;
+    // });
+    
+     var url = "http://localhost:3000/teacher/techerlogin";
     var data = {
       "teacherCMS": teacherCMS.text,
       "password": password.text,
     };
-
+    if(password.text.isNotEmpty && teacherCMS.text.isNotEmpty){
+     
     var res = await http.post(Uri.parse(url), body: data);
-    if (jsonDecode(res.body) == "false") {
-      Fluttertoast.showToast(
-          msg: "incorrect password", toastLength: Toast.LENGTH_SHORT);
-    } else {
-      print(jsonDecode(res.body));
+
+    // if (jsonDecode(res.body) == "false") {
+    //   Fluttertoast.showToast(
+    //       msg: "incorrect password", toastLength: Toast.LENGTH_SHORT);
+    // } else {
+    //   print(jsonDecode(res.body));
+    // }
+    if(res.statusCode == 200){
+                Navigator.push(context,
+                     MaterialPageRoute(builder: (context) => AdminDashboard()));
     }
-
-    setState(() {
-      processing = false;
-    });
+    else{
+   Scaffold.of(context).showSnackBar(SnackBar(content: Text("invalid creadentails")));
+    }
+    }
+    else {
+   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Text field not allowed")));
+    }
+    // setState(() {
+    //   processing = false;
+    // });
   }
-
+                        //card  withdraw form
   Widget boxUi() {
     return Card(
       elevation: 10.0,
@@ -158,7 +172,7 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
-
+                                  //teacher login textbox and button
   Widget teacherLoginUI() {
     return Column(
       children: <Widget>[
@@ -191,8 +205,9 @@ class _MyAppState extends State<MyApp> {
         ),
         ElevatedButton(
             onPressed: () => {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => AdminDashboard()))
+              teacherLogin()
+                  // Navigator.push(context,
+                  //     MaterialPageRoute(builder: (context) => AdminDashboard()))
                 },
             child: processing == false
                 ? Text(
@@ -206,8 +221,8 @@ class _MyAppState extends State<MyApp> {
                   )),
       ],
     );
-  }
-
+  } 
+                               //hod login textbox and button
   Widget HODLoginUI() {
     return Column(
       children: <Widget>[
@@ -241,8 +256,10 @@ class _MyAppState extends State<MyApp> {
         ElevatedButton(
             // onPressed: () => registerUser(),
             onPressed: () => {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => AdminDashboard()))
+                  // Navigator.push(context,
+                  
+                  //     MaterialPageRoute(builder: (context) => AdminDashboard()))
+                      
                 },
             child: processing == false
                 ? Text(
@@ -256,6 +273,19 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  // now we will setup php and database
-//thank you
+
+
+//create function to call login post api
+// Future<void> login() async {
+//   if(password.text.isNotEmpty && teacherCMS.text.isNotEmpty){
+// var response = await http.post(Uri.parse("http://localhost:3000/teacher/techerlogin?teacher_id=INS-0020&password=teacher1"), body({
+//   'teacher_id' : teacherCMS.text;
+//     'password' : password.
+// }));
+//   }
+//   else {
+//     ScaffoldMessenger.of(context).showSnackBar(context: Text("black field not allowed"));
+//   }
+      
+// }
 }

@@ -29,7 +29,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool signin = true;
-  TextEditingController teacherCMS = TextEditingController();
+  TextEditingController teacher_id = TextEditingController();
   TextEditingController password = TextEditingController();
 
   bool processing = false;
@@ -40,7 +40,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void clearField() {
-    teacherCMS.clear();
+    teacher_id.clear();
     password.clear();
   }
 
@@ -78,7 +78,7 @@ class _MyAppState extends State<MyApp> {
     });
     var url = "https://";
     var data = {
-      "teacherCMS": teacherCMS.text,
+      "teacher_id": teacher_id.text,
       "password": password.text,
     };
 
@@ -90,7 +90,7 @@ class _MyAppState extends State<MyApp> {
       print(jsonDecode(res.body));
     }
     setState(() {
-      processing = false;
+      // processing = false;
     });
   }
 
@@ -98,18 +98,19 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       processing = true;
     });
-    var url = "https://";
+    var url = "http://localhost:3000/teacher/techerlogin";
     var data = {
-      "teacherCMS": teacherCMS.text,
+      "teacher_id": teacher_id.text,
       "password": password.text,
     };
-
     var res = await http.post(Uri.parse(url), body: data);
-    if (jsonDecode(res.body) == "false") {
+    if (jsonDecode(res.body).toString() == "false") {
       Fluttertoast.showToast(
           msg: "incorrect password", toastLength: Toast.LENGTH_SHORT);
     } else {
-      print(jsonDecode(res.body));
+      // Navigator.push(
+      //     context, MaterialPageRoute(builder: (context) => AdminDashboard()));
+      print((res.body.toString()));
     }
 
     setState(() {
@@ -163,7 +164,7 @@ class _MyAppState extends State<MyApp> {
     return Column(
       children: <Widget>[
         TextField(
-          controller: teacherCMS,
+          controller: teacher_id,
           decoration: const InputDecoration(
             prefixIcon: Icon(
               Icons.account_box,
@@ -191,8 +192,9 @@ class _MyAppState extends State<MyApp> {
         ),
         ElevatedButton(
             onPressed: () => {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => AdminDashboard()))
+                  teacherLogin()
+                  // Navigator.push(context,
+                  //     MaterialPageRoute(builder: (context) => AdminDashboard()))
                 },
             child: processing == false
                 ? Text(
@@ -212,7 +214,7 @@ class _MyAppState extends State<MyApp> {
     return Column(
       children: <Widget>[
         TextField(
-          controller: teacherCMS,
+          controller: teacher_id,
           decoration: const InputDecoration(
             labelText: "Enter your CMS",
             prefixIcon: const Icon(

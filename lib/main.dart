@@ -116,11 +116,18 @@ class _MyAppState extends State<MyApp> {
     //   print(jsonDecode(res.body));
     // }
     if(res.statusCode == 200){
-                Navigator.push(context,
+        if(res.statusCode != 201){
+          Scaffold.of(context).showSnackBar(SnackBar(content: Text("wrong input")));
+        }
+        else {
+           Navigator.push(context,
                      MaterialPageRoute(builder: (context) => AdminDashboard()));
+        }     
+     
+             
     }
     else{
-   Scaffold.of(context).showSnackBar(SnackBar(content: Text("invalid creadentails")));
+    Scaffold.of(context).showSnackBar(SnackBar(content: Text("invalid creadentails")));  
     }
     }
     else {

@@ -104,12 +104,15 @@ class _MyAppState extends State<MyApp> {
       "password": password.text,
     };
     var res = await http.post(Uri.parse(url), body: data);
-    if (jsonDecode(res.body).toString() == "false") {
+    var resData = jsonDecode(res.body);
+    if (resData["success"].toString() == "false") {
       Fluttertoast.showToast(
           msg: "incorrect password", toastLength: Toast.LENGTH_SHORT);
     } else {
-      // Navigator.push(
-      //     context, MaterialPageRoute(builder: (context) => AdminDashboard()));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => AdminDashboard(teacher_id.text)));
       print((res.body.toString()));
     }
 
@@ -243,8 +246,8 @@ class _MyAppState extends State<MyApp> {
         ElevatedButton(
             // onPressed: () => registerUser(),
             onPressed: () => {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => AdminDashboard()))
+                  // Navigator.push(context,
+                  //     MaterialPageRoute(builder: (context) => AdminDashboard()))
                 },
             child: processing == false
                 ? Text(

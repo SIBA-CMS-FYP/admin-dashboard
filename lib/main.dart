@@ -1,7 +1,7 @@
 import 'dart:convert';
+import 'package:adminpanel/admin-hod.dart';
 import 'package:adminpanel/admin_dashboard.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
@@ -31,6 +31,7 @@ class _MyAppState extends State<MyApp> {
   bool signin = true;
   TextEditingController teacher_id = TextEditingController();
   TextEditingController password = TextEditingController();
+TextEditingController hodcms = TextEditingController();
 
   bool processing = false;
 
@@ -42,6 +43,7 @@ class _MyAppState extends State<MyApp> {
   void clearField() {
     teacher_id.clear();
     password.clear();
+    hodcms.clear();
   }
 
   @override
@@ -76,21 +78,28 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       processing = true;
     });
-    var url = "https://";
+    var url = "http://localhost:3000/teacher/hodlogin";
     var data = {
-      "teacher_id": teacher_id.text,
+      "hodcms": hodcms.text,
       "password": password.text,
     };
 
     var res = await http.post(Uri.parse(url), body: data);
-    if (jsonDecode(res.body) == "False") {
-      Fluttertoast.showToast(
-          msg: "incorrect password", toastLength: Toast.LENGTH_SHORT);
+    var resData = jsonDecode(res.body);
+    if (resData["success"].toString() == "false") {
+      print("incorrect Password");
+      // Fluttertoast.showToast(
+      //     msg: "incorrect password", toastLength: Toast.LENGTH_SHORT);
     } else {
-      print(jsonDecode(res.body));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => Adminhod(hodcms.text)));
+      print((res.body.toString()));
     }
+
     setState(() {
-      // processing = false;
+      processing = false;
     });
   }
 
@@ -106,8 +115,9 @@ class _MyAppState extends State<MyApp> {
     var res = await http.post(Uri.parse(url), body: data);
     var resData = jsonDecode(res.body);
     if (resData["success"].toString() == "false") {
-      Fluttertoast.showToast(
-          msg: "incorrect password", toastLength: Toast.LENGTH_SHORT);
+      print("incorrect Password");
+      // Fluttertoast.showToast(
+      //     msg: "incorrect password", toastLength: Toast.LENGTH_SHORT);
     } else {
       Navigator.push(
           context,
@@ -217,7 +227,7 @@ class _MyAppState extends State<MyApp> {
     return Column(
       children: <Widget>[
         TextField(
-          controller: teacher_id,
+          controller: hodcms,
           decoration: const InputDecoration(
             labelText: "Enter your CMS",
             prefixIcon: const Icon(
@@ -244,10 +254,10 @@ class _MyAppState extends State<MyApp> {
           height: 10.0,
         ),
         ElevatedButton(
-            // onPressed: () => registerUser(),
+           
             onPressed: () => {
-                  // Navigator.push(context,
-                  //     MaterialPageRoute(builder: (context) => AdminDashboard()))
+              HODLoginPanel()
+                  
                 },
             child: processing == false
                 ? Text(

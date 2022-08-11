@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class AdminDashboard extends StatefulWidget {
-  String teacher_cms;
-  AdminDashboard(this.teacher_cms);
+  var teacher_id;
+  AdminDashboard(this.teacher_id);
 
   @override
   State<AdminDashboard> createState() => _AdminDashboardState();
@@ -30,7 +30,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
         
       ),
       body: Container(
-        child: Text("CMS" + widget.teacher_cms),
+        child: Text("Teacher CMS ID "+widget.teacher_id),
       ),
     );
   }

@@ -13,38 +13,32 @@ class _AdminDashboardState extends State<AdminDashboard> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Admin Panel"),
-        actions: <Widget>[
-          PopupMenuButton<String>(
-            onSelected: handleClick,
-            itemBuilder: (BuildContext context) {
-              return {'Logout', 'Settings'}.map((String choice) {
-                return PopupMenuItem<String>(
-                  value: choice,
-                  child: Text(choice),
-                );
-              }).toList();
-            },
-          ),
-        ],
-        // leading: IconButton(
-        //   onPressed: () {
-        //     Navigator.pop(context);
-        //   },
-        //   icon: Icon(
-        //     Icons.arrow_back_ios,
+        // actions: <Widget>[
+        //   PopupMenuButton<String>(
+        //     onSelected: handleClick,
+        //     itemBuilder: (BuildContext context) {
+        //       return {'Logout', 'Settings'}.map((String choice) {
+        //         return PopupMenuItem<String>(
+        //           value: choice,
+        //           child: Text(choice),
+        //         );
+        //       }).toList();
+        //     },
         //   ),
-        // ),
+        // ],
+        
       ),
       body: Container(),
     );
   }
 }
 
-void handleClick(String value) {
-  switch (value) {
-    case 'Logout':
-      break;
-    case 'Settings':
-      break;
-  }
-}
+// void handleClick(String value) {
+//   switch (value) {
+//     case 'Logout':
+//       break;
+//     case 'Settings':
+//       break;
+//   }
+// }
+

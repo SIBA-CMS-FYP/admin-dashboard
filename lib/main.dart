@@ -31,7 +31,8 @@ class _MyAppState extends State<MyApp> {
   bool signin = true;
   TextEditingController teacher_id = TextEditingController();
   TextEditingController password = TextEditingController();
-
+  TextEditingController hodCMS = TextEditingController();
+  TextEditingController hodPassword = TextEditingController();
   bool processing = false;
 
   @override
@@ -42,6 +43,8 @@ class _MyAppState extends State<MyApp> {
   void clearField() {
     teacher_id.clear();
     password.clear();
+    hodCMS.clear();
+    hodPassword.clear();
   }
 
   @override
@@ -72,23 +75,10 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  void HODLoginPanel() async {
+  void hODLoginPanel() async {
     setState(() {
       processing = true;
     });
-    var url = "https://";
-    var data = {
-      "teacher_id": teacher_id.text,
-      "password": password.text,
-    };
-
-    var res = await http.post(Uri.parse(url), body: data);
-    if (jsonDecode(res.body) == "False") {
-      Fluttertoast.showToast(
-          msg: "incorrect password", toastLength: Toast.LENGTH_SHORT);
-    } else {
-      print(jsonDecode(res.body));
-    }
     setState(() {
       // processing = false;
     });
@@ -167,7 +157,7 @@ class _MyAppState extends State<MyApp> {
     return Column(
       children: <Widget>[
         TextField(
-          controller: teacher_id,
+          controller: hodCMS,
           decoration: const InputDecoration(
             prefixIcon: Icon(
               Icons.account_box,
@@ -180,7 +170,7 @@ class _MyAppState extends State<MyApp> {
           height: 10.0,
         ),
         TextField(
-          controller: password,
+          controller: hodPassword,
           obscureText: true,
           decoration: const InputDecoration(
             labelText: "Enter Password",
@@ -194,11 +184,7 @@ class _MyAppState extends State<MyApp> {
           height: 10.0,
         ),
         ElevatedButton(
-            onPressed: () => {
-                  teacherLogin()
-                  // Navigator.push(context,
-                  //     MaterialPageRoute(builder: (context) => AdminDashboard()))
-                },
+            onPressed: () => {teacherLogin()},
             child: processing == false
                 ? Text(
                     'Login',
@@ -220,7 +206,7 @@ class _MyAppState extends State<MyApp> {
           controller: teacher_id,
           decoration: const InputDecoration(
             labelText: "Enter your CMS",
-            prefixIcon: const Icon(
+            prefixIcon: Icon(
               Icons.account_box,
             ),
             border: OutlineInputBorder(),
@@ -233,7 +219,7 @@ class _MyAppState extends State<MyApp> {
           controller: password,
           obscureText: true,
           decoration: const InputDecoration(
-            prefixIcon: const Icon(
+            prefixIcon: Icon(
               Icons.lock,
             ),
             labelText: "Enter Password",
@@ -244,10 +230,8 @@ class _MyAppState extends State<MyApp> {
           height: 10.0,
         ),
         ElevatedButton(
-            // onPressed: () => registerUser(),
             onPressed: () => {
-                  // Navigator.push(context,
-                  //     MaterialPageRoute(builder: (context) => AdminDashboard()))
+                  hODLoginPanel(),
                 },
             child: processing == false
                 ? Text(
@@ -260,7 +244,4 @@ class _MyAppState extends State<MyApp> {
       ],
     );
   }
-
-  // now we will setup php and database
-//thank you
 }

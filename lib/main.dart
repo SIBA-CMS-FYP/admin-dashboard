@@ -30,9 +30,8 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool signin = true;
-  TextEditingController teacherCMS = TextEditingController();
+  TextEditingController teacher_id = TextEditingController();
   TextEditingController password = TextEditingController();
-
 TextEditingController hodcms = TextEditingController();
   bool processing = false;
 
@@ -42,8 +41,9 @@ TextEditingController hodcms = TextEditingController();
   }
 
   void clearField() {
-    teacherCMS.clear();
+    teacher_id.clear();
     password.clear();
+    hodcms.clear();
   }
 
   @override
@@ -78,40 +78,50 @@ TextEditingController hodcms = TextEditingController();
     setState(() {
       processing = true;
     });
-    var url = "https://";
+    var url = "http://localhost:3000/teacher/hodlogin";
     var data = {
-      "teacherCMS": teacherCMS.text,
+      "hodcms": hodcms.text,
       "password": password.text,
     };
-
-    var res = await http.post(Uri.parse(url), body: data);
-    if (jsonDecode(res.body) == "False") {
+var res = await http.post(Uri.parse(url), body: data);
+    var resData = jsonDecode(res.body);
+    if (resData["success"].toString() == "false") {
       Fluttertoast.showToast(
           msg: "incorrect password", toastLength: Toast.LENGTH_SHORT);
     } else {
-      print(jsonDecode(res.body));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => Adminhod(hodcms.text)));
+      print((res.body.toString()));
     }
+    
     setState(() {
       processing = false;
     });
   }
 
   void teacherLogin() async {
-    setState(() {
+    
+     setState(() {
       processing = true;
     });
-    var url = "https://";
+    var url = "http://localhost:3000/teacher/techerlogin";
     var data = {
-      "teacherCMS": teacherCMS.text,
+      "teacher_id": teacher_id.text,
       "password": password.text,
     };
-
     var res = await http.post(Uri.parse(url), body: data);
-    if (jsonDecode(res.body) == "false") {
+    var resData = jsonDecode(res.body);
+    if (resData["success"].toString() == "false") {
       Fluttertoast.showToast(
           msg: "incorrect password", toastLength: Toast.LENGTH_SHORT);
     } else {
-      print(jsonDecode(res.body));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => AdminDashboard(teacher_id.text)));
+      print((res.body.toString()));
     }
 
     setState(() {
@@ -165,7 +175,7 @@ TextEditingController hodcms = TextEditingController();
     return Column(
       children: <Widget>[
         TextField(
-          controller: teacherCMS,
+          controller: teacher_id,
           decoration: const InputDecoration(
             prefixIcon: Icon(
               Icons.account_box,
@@ -193,8 +203,7 @@ TextEditingController hodcms = TextEditingController();
         ),
         ElevatedButton(
             onPressed: () => {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => AdminDashboard(teacherCMS.text)))
+                 teacherLogin()
                 },
             child: processing == false
                 ? Text(
@@ -214,7 +223,7 @@ TextEditingController hodcms = TextEditingController();
     return Column(
       children: <Widget>[
         TextField(
-          controller: teacherCMS,
+          controller: hodcms,
           decoration: const InputDecoration(
             labelText: "Enter your CMS",
             prefixIcon: const Icon(
@@ -243,8 +252,7 @@ TextEditingController hodcms = TextEditingController();
         ElevatedButton(
             // onPressed: () => registerUser(),
             onPressed: () => {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Adminhod(hodcms.text)))
+                  HODLoginPanel()
                 },
             child: processing == false
                 ? Text(

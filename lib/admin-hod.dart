@@ -17,7 +17,7 @@ class _AdminhodState extends State<Adminhod> {
       
       ),
       body: Container(
-        child: Text("Teacher CMS ID "+widget.hodcms),
+        child: Text("HOD CMS ID "+widget.hodcms),
       ),
     );
   }

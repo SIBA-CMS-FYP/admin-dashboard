@@ -36,12 +36,3 @@ class _AdminDashboardState extends State<AdminDashboard> {
   }
 }
 
-// void handleClick(String value) {
-//   switch (value) {
-//     case 'Logout':
-//       break;
-//     case 'Settings':
-//       break;
-//   }
-// }
-

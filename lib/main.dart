@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:adminpanel/admin-hod.dart';
 import 'package:adminpanel/admin_dashboard.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
@@ -29,10 +30,10 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool signin = true;
-  TextEditingController teacher_id = TextEditingController();
+  TextEditingController teacherCMS = TextEditingController();
   TextEditingController password = TextEditingController();
-TextEditingController hodcms = TextEditingController();
 
+TextEditingController hodcms = TextEditingController();
   bool processing = false;
 
   @override
@@ -41,9 +42,8 @@ TextEditingController hodcms = TextEditingController();
   }
 
   void clearField() {
-    teacher_id.clear();
+    teacherCMS.clear();
     password.clear();
-    hodcms.clear();
   }
 
   @override
@@ -78,26 +78,19 @@ TextEditingController hodcms = TextEditingController();
     setState(() {
       processing = true;
     });
-    var url = "http://localhost:3000/teacher/hodlogin";
+    var url = "https://";
     var data = {
-      "hodcms": hodcms.text,
+      "teacherCMS": teacherCMS.text,
       "password": password.text,
     };
 
     var res = await http.post(Uri.parse(url), body: data);
-    var resData = jsonDecode(res.body);
-    if (resData["success"].toString() == "false") {
-      print("incorrect Password");
-      // Fluttertoast.showToast(
-      //     msg: "incorrect password", toastLength: Toast.LENGTH_SHORT);
+    if (jsonDecode(res.body) == "False") {
+      Fluttertoast.showToast(
+          msg: "incorrect password", toastLength: Toast.LENGTH_SHORT);
     } else {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => Adminhod(hodcms.text)));
-      print((res.body.toString()));
+      print(jsonDecode(res.body));
     }
-
     setState(() {
       processing = false;
     });
@@ -107,23 +100,18 @@ TextEditingController hodcms = TextEditingController();
     setState(() {
       processing = true;
     });
-    var url = "http://localhost:3000/teacher/techerlogin";
+    var url = "https://";
     var data = {
-      "teacher_id": teacher_id.text,
+      "teacherCMS": teacherCMS.text,
       "password": password.text,
     };
+
     var res = await http.post(Uri.parse(url), body: data);
-    var resData = jsonDecode(res.body);
-    if (resData["success"].toString() == "false") {
-      print("incorrect Password");
-      // Fluttertoast.showToast(
-      //     msg: "incorrect password", toastLength: Toast.LENGTH_SHORT);
+    if (jsonDecode(res.body) == "false") {
+      Fluttertoast.showToast(
+          msg: "incorrect password", toastLength: Toast.LENGTH_SHORT);
     } else {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => AdminDashboard(teacher_id.text)));
-      print((res.body.toString()));
+      print(jsonDecode(res.body));
     }
 
     setState(() {
@@ -177,7 +165,7 @@ TextEditingController hodcms = TextEditingController();
     return Column(
       children: <Widget>[
         TextField(
-          controller: teacher_id,
+          controller: teacherCMS,
           decoration: const InputDecoration(
             prefixIcon: Icon(
               Icons.account_box,
@@ -205,9 +193,8 @@ TextEditingController hodcms = TextEditingController();
         ),
         ElevatedButton(
             onPressed: () => {
-                  teacherLogin()
-                  // Navigator.push(context,
-                  //     MaterialPageRoute(builder: (context) => AdminDashboard()))
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => AdminDashboard(teacherCMS.text)))
                 },
             child: processing == false
                 ? Text(
@@ -227,7 +214,7 @@ TextEditingController hodcms = TextEditingController();
     return Column(
       children: <Widget>[
         TextField(
-          controller: hodcms,
+          controller: teacherCMS,
           decoration: const InputDecoration(
             labelText: "Enter your CMS",
             prefixIcon: const Icon(
@@ -254,10 +241,10 @@ TextEditingController hodcms = TextEditingController();
           height: 10.0,
         ),
         ElevatedButton(
-           
+            // onPressed: () => registerUser(),
             onPressed: () => {
-              HODLoginPanel()
-                  
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Adminhod(hodcms.text)))
                 },
             child: processing == false
                 ? Text(
@@ -274,4 +261,3 @@ TextEditingController hodcms = TextEditingController();
   // now we will setup php and database
 //thank you
 }
-

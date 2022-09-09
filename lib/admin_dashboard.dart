@@ -36,9 +36,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
         //   ),
         // ),
       ),
-      body: Container(
-        child: Text("CMS" + widget.teacher_cms),
-      ),
+      body: Center(child: Text("d")),
     );
   }
 }

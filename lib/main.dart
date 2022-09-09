@@ -1,9 +1,10 @@
 import 'dart:convert';
-import 'package:adminpanel/admin_dashboard.dart';
+import 'package:adminpanel/hod_portal.dart';
+import 'package:adminpanel/teacher_portal.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -28,10 +29,11 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  bool _validate = false;
   bool signin = true;
   TextEditingController teacher_id = TextEditingController();
   TextEditingController password = TextEditingController();
-  TextEditingController hodCMS = TextEditingController();
+  TextEditingController hodcms = TextEditingController();
   TextEditingController hodPassword = TextEditingController();
   bool processing = false;
 
@@ -43,7 +45,7 @@ class _MyAppState extends State<MyApp> {
   void clearField() {
     teacher_id.clear();
     password.clear();
-    hodCMS.clear();
+    hodcms.clear();
     hodPassword.clear();
   }
 
@@ -79,9 +81,56 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       processing = true;
     });
+    var url = "http://localhost:3000/teacher/hodlogin";
+    var data = {
+      "hodcms": hodcms.text,
+      "password": hodPassword.text,
+    };
+    var res = await http.post(Uri.parse(url), body: data);
+    var resData = jsonDecode(res.body);
+    if (resData["success"].toString() == "false") {
+      print("object");
+      _showMyDialog();
+    } else {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('hodcms', hodcms.text);
+      prefs.setString("hodpassword", hodPassword.text);
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => HodResponse(hodcms.text)));
+      print((res.body.toString()));
+    }
+
     setState(() {
-      // processing = false;
+      processing = false;
     });
+  }
+
+  Future<void> _showMyDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('AlertDialog Title'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: const <Widget>[
+                Text('This is a demo alert dialog.'),
+                Text('Would you like to approve of this message?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Approve'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void teacherLogin() async {
@@ -96,13 +145,17 @@ class _MyAppState extends State<MyApp> {
     var res = await http.post(Uri.parse(url), body: data);
     var resData = jsonDecode(res.body);
     if (resData["success"].toString() == "false") {
-      Fluttertoast.showToast(
-          msg: "incorrect password", toastLength: Toast.LENGTH_SHORT);
+      print("object");
+      // Fluttertoast.showToast(
+      //     msg: "incorrect password", toastLength: Toast.LENGTH_SHORT);
     } else {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('cms', teacher_id.text);
+      prefs.setString("password", password.text);
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => AdminDashboard(teacher_id.text)));
+              builder: (context) => TeacherResponse(teacher_id.text)));
       print((res.body.toString()));
     }
 
@@ -157,12 +210,13 @@ class _MyAppState extends State<MyApp> {
     return Column(
       children: <Widget>[
         TextField(
-          controller: hodCMS,
-          decoration: const InputDecoration(
+          controller: teacher_id,
+          decoration: InputDecoration(
             prefixIcon: Icon(
               Icons.account_box,
             ),
-            labelText: "Enter your CMS",
+            labelText: "Enter your Teacher CMS",
+            errorText: _validate ? 'CMS Can\'t Be Empty' : null,
             border: OutlineInputBorder(),
           ),
         ),
@@ -170,10 +224,11 @@ class _MyAppState extends State<MyApp> {
           height: 10.0,
         ),
         TextField(
-          controller: hodPassword,
+          controller: password,
           obscureText: true,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             labelText: "Enter Password",
+            errorText: _validate ? 'Password Can\'t Be Empty' : null,
             prefixIcon: Icon(
               Icons.lock,
             ),
@@ -184,17 +239,22 @@ class _MyAppState extends State<MyApp> {
           height: 10.0,
         ),
         ElevatedButton(
-            onPressed: () => {teacherLogin()},
-            child: processing == false
-                ? Text(
-                    'Login',
-                    style: GoogleFonts.varelaRound(
-                        fontSize: 18.0,
-                        color: Color.fromARGB(255, 254, 255, 255)),
-                  )
-                : const CircularProgressIndicator(
-                    backgroundColor: Colors.red,
-                  )),
+          onPressed: () => {
+            setState(() {
+              teacher_id.text.isEmpty ? _validate = true : _validate = false;
+              password.text.isEmpty ? _validate = true : _validate = false;
+              teacherLogin();
+            }),
+          },
+          child: processing == false
+              ? Text(
+                  'Login',
+                  style: GoogleFonts.varelaRound(
+                      fontSize: 18.0,
+                      color: Color.fromARGB(255, 254, 255, 255)),
+                )
+              : CircularProgressIndicator(),
+        ),
       ],
     );
   }
@@ -203,9 +263,10 @@ class _MyAppState extends State<MyApp> {
     return Column(
       children: <Widget>[
         TextField(
-          controller: teacher_id,
+          controller: hodcms,
           decoration: const InputDecoration(
             labelText: "Enter your CMS",
+            errorText: 'CMS Can\'t Be Empty',
             prefixIcon: Icon(
               Icons.account_box,
             ),
@@ -216,13 +277,14 @@ class _MyAppState extends State<MyApp> {
           height: 10.0,
         ),
         TextField(
-          controller: password,
+          controller: hodPassword,
           obscureText: true,
           decoration: const InputDecoration(
             prefixIcon: Icon(
               Icons.lock,
             ),
             labelText: "Enter Password",
+            errorText: 'Password Can\'t Be Empty',
             border: OutlineInputBorder(),
           ),
         ),
@@ -240,7 +302,7 @@ class _MyAppState extends State<MyApp> {
                         fontSize: 18.0,
                         color: Color.fromARGB(255, 251, 252, 252)),
                   )
-                : const CircularProgressIndicator(backgroundColor: Colors.red)),
+                : const CircularProgressIndicator()),
       ],
     );
   }

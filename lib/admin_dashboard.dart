@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class AdminDashboard extends StatefulWidget {
-  const AdminDashboard({Key? key}) : super(key: key);
+  String teacher_cms;
+  AdminDashboard(this.teacher_cms);
 
   @override
   State<AdminDashboard> createState() => _AdminDashboardState();
@@ -28,7 +29,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
         // ],
         
       ),
-      body: Container(),
+      body: Center(child: Text("d")),
     );
   }
 }

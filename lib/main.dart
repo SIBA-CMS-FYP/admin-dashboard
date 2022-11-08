@@ -1,6 +1,7 @@
 import 'dart:convert';
-import 'package:adminpanel/hod_portal.dart';
-import 'package:adminpanel/teacher_portal.dart';
+
+import 'package:adminpanel/admin_dashboard.dart';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
@@ -81,7 +82,9 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       processing = true;
     });
+
     var url = "http://localhost:3000/teacher/hodlogin";
+
     var data = {
       "hodcms": hodcms.text,
       "password": hodPassword.text,
@@ -134,14 +137,18 @@ class _MyAppState extends State<MyApp> {
   }
 
   void teacherLogin() async {
-    setState(() {
-      processing = true;
-    });
-    var url = "http://localhost:3000/teacher/techerlogin";
+
+    // setState(() {
+    //   processing = true;
+    // });
+    
+     var url = "http://localhost:3000/teacher/techerlogin";
+
     var data = {
       "teacher_id": teacher_id.text,
       "password": password.text,
     };
+
     var res = await http.post(Uri.parse(url), body: data);
     var resData = jsonDecode(res.body);
     if (resData["success"].toString() == "false") {
@@ -159,11 +166,36 @@ class _MyAppState extends State<MyApp> {
       print((res.body.toString()));
     }
 
-    setState(() {
-      processing = false;
-    });
-  }
 
+    // if (jsonDecode(res.body) == "false") {
+    //   Fluttertoast.showToast(
+    //       msg: "incorrect password", toastLength: Toast.LENGTH_SHORT);
+    // } else {
+    //   print(jsonDecode(res.body));
+    // }
+    if(res.statusCode == 200){
+        if(res.statusCode != 201){
+          Scaffold.of(context).showSnackBar(SnackBar(content: Text("wrong input")));
+        }
+        else {
+           Navigator.push(context,
+                     MaterialPageRoute(builder: (context) => AdminDashboard()));
+        }     
+     
+             
+    }
+    else{
+    Scaffold.of(context).showSnackBar(SnackBar(content: Text("invalid creadentails")));  
+    }
+    }
+    else {
+   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Text field not allowed")));
+    }
+    // setState(() {
+    //   processing = false;
+    // });
+  }
+                        //card  withdraw form
   Widget boxUi() {
     return Card(
       elevation: 10.0,
@@ -205,7 +237,7 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
-
+                                  //teacher login textbox and button
   Widget teacherLoginUI() {
     return Column(
       children: <Widget>[
@@ -239,6 +271,7 @@ class _MyAppState extends State<MyApp> {
           height: 10.0,
         ),
         ElevatedButton(
+
           onPressed: () => {
             setState(() {
               teacher_id.text.isEmpty ? _validate = true : _validate = false;
@@ -255,10 +288,11 @@ class _MyAppState extends State<MyApp> {
                 )
               : CircularProgressIndicator(),
         ),
+
       ],
     );
-  }
-
+  } 
+                               //hod login textbox and button
   Widget HODLoginUI() {
     return Column(
       children: <Widget>[
@@ -293,7 +327,12 @@ class _MyAppState extends State<MyApp> {
         ),
         ElevatedButton(
             onPressed: () => {
-                  hODLoginPanel(),
+
+                  // Navigator.push(context,
+                  
+                  //     MaterialPageRoute(builder: (context) => AdminDashboard()))
+                      
+
                 },
             child: processing == false
                 ? Text(
@@ -306,4 +345,19 @@ class _MyAppState extends State<MyApp> {
       ],
     );
   }
+
+//create function to call login post api
+// Future<void> login() async {
+//   if(password.text.isNotEmpty && teacherCMS.text.isNotEmpty){
+// var response = await http.post(Uri.parse("http://localhost:3000/teacher/techerlogin?teacher_id=INS-0020&password=teacher1"), body({
+//   'teacher_id' : teacherCMS.text;
+//     'password' : password.
+// }));
+//   }
+//   else {
+//     ScaffoldMessenger.of(context).showSnackBar(context: Text("black field not allowed"));
+//   }
+      
+// }
+
 }
